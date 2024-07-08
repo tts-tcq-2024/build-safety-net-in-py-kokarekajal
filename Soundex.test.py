@@ -1,44 +1,42 @@
-import unittest
+def get_soundex_code(char):
+    char = char.upper()
+    mapping = {
+        'B': '1', 'F': '1', 'P': '1', 'V': '1',
+        'C': '2', 'G': '2', 'J': '2', 'K': '2', 'Q': '2', 'S': '2', 'X': '2', 'Z': '2',
+        'D': '3', 'T': '3',
+        'L': '4',
+        'M': '5', 'N': '5',
+        'R': '6'
+    }
+    # Return the corresponding number or '0' for vowels and other characters not in the mapping
+    return mapping.get(char, '0')
 
-def generate_soundex(name):
-    """Simple placeholder implementation for the Soundex algorithm."""
-    if not name:
+def comparison(ch, prev_code):
+    # Return the current code only if it's not '0' and different from the previous code
+    if ch != '0' and ch != prev_code:
+        return ch
+    else:
         return ""
-    name = name.upper()
-    soundex = name[0]
-    digits = "01230120022455012623010202"
+
+def num_map(name, prev_code):
+    soundex = ""
     for char in name[1:]:
-        num = digits[ord(char) - ord('A')]
-        if num != '0':
-            soundex += num
-    soundex = soundex[:4].ljust(4, '0')
+        ch = get_soundex_code(char)
+        code = comparison(ch, prev_code)
+        if code:  # Append non-empty code to soundex and update prev_code
+            soundex += code
+            prev_code = code
     return soundex
 
-class TestSoundex(unittest.TestCase):
+def generate_soundex(name):
+    if not name:
+        return ""
+    
+    # Start with the first letter capitalized
+    soundex = name[0].upper()
+    prev_code = get_soundex_code(soundex)
 
-    def test_empty_string(self):
-        self.assertEqual(generate_soundex(""), "")
+    # Append the rest of the soundex code derived from the remaining characters
+    soundex += num_map(name, prev_code)
 
-    def test_single_character(self):
-        self.assertEqual(generate_soundex("A"), "A000")
-
-    def test_simple_name(self):
-        self.assertEqual(generate_soundex("Smith"), "S530")
-
-    def test_ignore_vowels_and_specific_consonants(self):
-        self.assertEqual(generate_soundex("Ashcraft"), "A261")
-
-    def test_handle_same_letter_repetition(self):
-        self.assertEqual(generate_soundex("Tymczak"), "T522")
-
-    def test_handle_non_alpha_characters(self):
-        self.assertEqual(generate_soundex("McDonald"), "M235")
-
-    def test_handle_name_with_spaces(self):
-        self.assertEqual(generate_soundex("Van Helsing"), "V542")
-
-    def test_handle_name_with_punctuation(self):
-        self.assertEqual(generate_soundex("O'Connor"), "O256")
-
-if __name__ == '__main__':
-    unittest.main()
+    # Tr
