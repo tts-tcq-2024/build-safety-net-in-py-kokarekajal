@@ -9,25 +9,35 @@ def get_soundex_code(c):
         'R': '6'
     }
     return mapping.get(c, '0')  # Default to '0' for non-mapped characters
-
-
+ 
+def comparison(ch,prev_code):
+    if ch != '0' and ch != prev_code:
+        return ch
+    else:
+        return ""
+def num_map(name,prev_code):
+    soundex = ""
+    for char in name[1:]:
+        ch = get_soundex_code(char)
+        code = comparison(ch,prev_code)
+        if(code != ""):
+            soundex += code
+            prev_code = code
+    return soundex
+ 
 def generate_soundex(name):
     if not name:
         return ""
-
+    else:
+        soundex = name[0].upper()
+        prev_code = get_soundex_code(soundex)
+        soundex = soundex + num_map(name,prev_code)
+        if len(soundex) > 4:
+            soundex = soundex[:4]
+ 
     # Start with the first letter (capitalized)
-    soundex = name[0].upper()
-    prev_code = get_soundex_code(soundex)
-
-    for char in name[1:]:
-        code = get_soundex_code(char)
-        if code != '0' and code != prev_code:
-            soundex += code
-            prev_code = code
-        if len(soundex) == 4:
-            break
-
+ 
     # Pad with zeros if necessary
     soundex = soundex.ljust(4, '0')
-
+ 
     return soundex
